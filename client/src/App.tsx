@@ -8,10 +8,15 @@ import NotFound from "@/pages/not-found";
 import Welcome from "@/pages/welcome";
 import Login from "@/pages/login";
 import Register from "@/pages/register";
+import ForgotPassword from "@/pages/forgot-password";
 import Dashboard from "@/pages/dashboard";
 import SearchPage from "@/pages/search";
 import PatientDetails from "@/pages/patient-details";
+import HandoversPage from "@/pages/handovers";
 import Profile from "@/pages/profile";
+import EditProfile from "@/pages/edit-profile";
+import ChangePassword from "@/pages/change-password";
+import Reports from "@/pages/reports";
 import Settings from "@/pages/settings";
 
 function AuthenticatedRoute({ children }: { children: React.ReactNode }) {
@@ -40,6 +45,7 @@ function Router() {
       <Route path="/welcome" component={Welcome} />
       <Route path="/login" component={Login} />
       <Route path="/register" component={Register} />
+      <Route path="/forgot-password" component={ForgotPassword} />
       <Route path="/" component={() => isAuthenticated ? <Dashboard /> : <Welcome />} />
       <Route path="/dashboard">
         <AuthenticatedRoute>
@@ -56,9 +62,29 @@ function Router() {
           <PatientDetails />
         </AuthenticatedRoute>
       </Route>
+      <Route path="/handovers">
+        <AuthenticatedRoute>
+          <HandoversPage />
+        </AuthenticatedRoute>
+      </Route>
       <Route path="/profile">
         <AuthenticatedRoute>
           <Profile />
+        </AuthenticatedRoute>
+      </Route>
+      <Route path="/edit-profile">
+        <AuthenticatedRoute>
+          <EditProfile />
+        </AuthenticatedRoute>
+      </Route>
+      <Route path="/change-password">
+        <AuthenticatedRoute>
+          <ChangePassword />
+        </AuthenticatedRoute>
+      </Route>
+      <Route path="/reports">
+        <AuthenticatedRoute>
+          <Reports />
         </AuthenticatedRoute>
       </Route>
       <Route path="/settings">

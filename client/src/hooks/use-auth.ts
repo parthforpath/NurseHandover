@@ -20,9 +20,9 @@ export function useAuth() {
       const authData = await authApi.login(employeeId, password);
       authApi.saveAuth(authData);
       setUser(authData.user);
-      return authData;
-    } catch (error) {
-      throw error;
+      return { success: true, data: authData };
+    } catch (error: any) {
+      return { success: false, error: error.message || 'Login failed' };
     }
   };
 

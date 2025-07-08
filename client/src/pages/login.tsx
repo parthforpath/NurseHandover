@@ -27,8 +27,21 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      await login(formData.employeeId, formData.password);
-      setLocation('/dashboard');
+      const result = await login(formData.employeeId, formData.password);
+      if (result.success) {
+        toast({
+          title: "Login successful",
+          description: "Welcome back to NurseScript!",
+          variant: "default",
+        });
+        setLocation('/dashboard');
+      } else {
+        toast({
+          title: "Login failed",
+          description: result.error || "Invalid credentials. Please try again.",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       toast({
         title: "Login failed",
@@ -101,6 +114,7 @@ export default function Login() {
                 <Button
                   type="button"
                   variant="link"
+                  onClick={() => setLocation('/forgot-password')}
                   className="text-sm text-medical-blue hover:text-blue-700 p-0 h-auto"
                 >
                   Forgot Password?

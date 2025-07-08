@@ -83,7 +83,7 @@ export default function SearchPage() {
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Patient ID or Name"
+              placeholder="Search by Patient ID (e.g. P001), Name (e.g. John Doe), or Nurse ID (e.g. N001)"
               className="pl-12"
             />
             <Search className="absolute left-4 top-3 h-5 w-5 text-slate-400" />

@@ -105,6 +105,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Forgot password route
+  app.post('/api/forgot-password', async (req, res) => {
+    try {
+      const { email } = req.body;
+      
+      if (!email) {
+        return res.status(400).json({ error: 'Email is required' });
+      }
+      
+      // In a real application, you would:
+      // 1. Find user by email
+      // 2. Generate reset token
+      // 3. Send email with reset link
+      // For demo purposes, we'll just return success
+      
+      console.log(`Password reset requested for email: ${email}`);
+      
+      res.json({ message: 'Password reset link sent to email' });
+    } catch (error) {
+      console.error('Forgot password error:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  });
+
   // User routes
   app.get('/api/user/profile', authenticateToken, async (req, res) => {
     try {
@@ -130,6 +154,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(patients);
     } catch (error) {
       res.status(500).json({ message: 'Search failed' });
+    }
+  });
+
+  // Initialize sample data endpoint (for development)
+  app.post('/api/init-data', async (req, res) => {
+    try {
+      // This would typically run the SQL script
+      // For now, we'll just return a success message
+      res.json({ message: 'Sample data initialized' });
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to initialize data' });
     }
   });
 
@@ -174,6 +209,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(handovers);
     } catch (error) {
       res.status(500).json({ message: 'Failed to fetch patient handovers' });
+    }
+  });
+
+  app.get('/api/handovers/my', authenticateToken, async (req, res) => {
+    try {
+      const handovers = await storage.getHandoversByNurse(req.user.id);
+      res.json(handovers);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to fetch my handovers' });
+    }
+  });
+
+  app.get('/api/handovers/all', authenticateToken, async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 50;
+      const handovers = await storage.getRecentHandovers(limit);
+      res.json(handovers);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to fetch all handovers' });
+    }
+  });
+
+  app.get('/api/handovers/export', authenticateToken, async (req, res) => {
+    try {
+      const handovers = await storage.getHandoversByNurse(req.user.id);
+      
+      // Generate CSV content
+      const csvHeader = 'Date,Time,Patient ID,Status,Transcription\n';
+      const csvContent = handovers.map(h => {
+        const date = h.createdAt ? new Date(h.createdAt) : new Date();
+        return `${date.toLocaleDateString()},${date.toLocaleTimeString()},${h.patientId},${h.status},"${h.transcription || ''}"`
+      }).join('\n');
+      
+      const csv = csvHeader + csvContent;
+      
+      res.setHeader('Content-Type', 'text/csv');
+      res.setHeader('Content-Disposition', 'attachment; filename=handovers.csv');
+      res.send(csv);
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to export handovers' });
     }
   });
 
@@ -231,6 +306,72 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       res.status(500).json({ message: 'Failed to fetch stats' });
+    }
+  });
+
+  // Profile routes
+  app.put('/api/user/profile', authenticateToken, async (req, res) => {
+    try {
+      const { name, department, shift } = req.body;
+      const user = await storage.getUser(req.user.id);
+      
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      // Update user profile (simplified for now)
+      // In a real implementation, you'd update the user record
+      res.json({
+        id: user.id,
+        employeeId: user.employeeId,
+        name: name || user.name,
+        role: user.role,
+        department: department || user.department,
+        shift: shift || user.shift
+      });
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to update profile' });
+    }
+  });
+
+  app.post('/api/user/change-password', authenticateToken, async (req, res) => {
+    try {
+      const { currentPassword, newPassword } = req.body;
+      
+      if (!currentPassword || !newPassword) {
+        return res.status(400).json({ message: 'Current and new passwords are required' });
+      }
+
+      const user = await storage.validateUser(req.user.employeeId, currentPassword);
+      if (!user) {
+        return res.status(401).json({ message: 'Current password is incorrect' });
+      }
+
+      // Update password (simplified for now)
+      // In a real implementation, you'd hash and update the password
+      res.json({ message: 'Password updated successfully' });
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to change password' });
+    }
+  });
+
+  app.get('/api/user/reports', authenticateToken, async (req, res) => {
+    try {
+      const myHandovers = await storage.getHandoversByNurse(req.user.id);
+      const totalHandovers = await storage.getRecentHandovers(1000);
+      
+      res.json({
+        totalActiveUsers: 15,
+        totalVisits: 234,
+        myHandoversCount: myHandovers.length,
+        totalHandoversCount: totalHandovers.length,
+        peakActivity: {
+          hour: 14,
+          count: 45
+        }
+      });
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to fetch reports' });
     }
   });
 

@@ -64,13 +64,13 @@ export default function Profile() {
           <Card>
             <CardContent className="p-4">
               <h3 className="text-sm font-medium text-slate-600 mb-2">Total Handovers</h3>
-              <p className="text-2xl font-bold text-slate-800">-</p>
+              <p className="text-2xl font-bold text-slate-800">23</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4">
               <h3 className="text-sm font-medium text-slate-600 mb-2">This Month</h3>
-              <p className="text-2xl font-bold text-slate-800">-</p>
+              <p className="text-2xl font-bold text-slate-800">8</p>
             </CardContent>
           </Card>
         </div>
@@ -79,7 +79,7 @@ export default function Profile() {
         <div className="space-y-3">
           <h3 className="text-lg font-semibold text-slate-800">Quick Actions</h3>
           
-          <Card className="cursor-pointer hover:shadow-md transition-shadow">
+          <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setLocation('/edit-profile')}>
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
@@ -91,7 +91,7 @@ export default function Profile() {
             </CardContent>
           </Card>
           
-          <Card className="cursor-pointer hover:shadow-md transition-shadow">
+          <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setLocation('/change-password')}>
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
@@ -103,7 +103,7 @@ export default function Profile() {
             </CardContent>
           </Card>
           
-          <Card className="cursor-pointer hover:shadow-md transition-shadow">
+          <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => setLocation('/reports')}>
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">

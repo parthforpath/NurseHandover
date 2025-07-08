@@ -112,7 +112,17 @@ export default function Dashboard() {
       
       {/* Recent Handovers */}
       <div className="px-6">
-        <h2 className="text-lg font-semibold text-slate-800 mb-4">Recent Handovers</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-slate-800">Recent Handovers</h2>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setLocation('/handovers')}
+            className="text-medical-blue border-medical-blue hover:bg-medical-blue hover:text-white"
+          >
+            View All
+          </Button>
+        </div>
         <div className="space-y-3">
           {recentHandovers?.map((handover: any) => (
             <Card key={handover.id} className="cursor-pointer hover:shadow-md transition-shadow">
