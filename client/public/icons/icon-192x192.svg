@@ -1,0 +1,15 @@
+<svg width="192" height="192" viewBox="0 0 192 192" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="192" height="192" rx="24" fill="#0369A1"/>
+  <!-- Microphone body -->
+  <rect x="80" y="48" width="32" height="56" rx="16" fill="white"/>
+  <!-- Microphone stand -->
+  <rect x="94" y="104" width="4" height="24" fill="white"/>
+  <!-- Microphone base -->
+  <rect x="72" y="128" width="48" height="8" rx="4" fill="white"/>
+  <!-- Medical cross -->
+  <rect x="144" y="64" width="24" height="4" rx="2" fill="white"/>
+  <rect x="154" y="54" width="4" height="24" rx="2" fill="white"/>
+  <!-- Sound waves -->
+  <path d="M50 70 C50 70, 42 80, 42 96 C42 112, 50 122, 50 122" stroke="white" stroke-width="3" fill="none"/>
+  <path d="M58 78 C58 78, 54 84, 54 96 C54 108, 58 114, 58 114" stroke="white" stroke-width="3" fill="none"/>
+</svg>
