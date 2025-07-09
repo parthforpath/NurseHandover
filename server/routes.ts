@@ -160,10 +160,125 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize sample data endpoint (for development)
   app.post('/api/init-data', async (req, res) => {
     try {
-      // This would typically run the SQL script
-      // For now, we'll just return a success message
-      res.json({ message: 'Sample data initialized' });
+      // Add some sample patients
+      const samplePatients = [
+        {
+          patientId: 'P001',
+          name: 'John Smith',
+          room: 'Room 301A',
+          ward: '3A',
+          status: 'active',
+          dateOfBirth: new Date('1978-05-20'),
+          gender: 'male',
+          medicalRecordNumber: 'MR123456',
+          primaryDiagnosis: 'Pneumonia',
+          attendingPhysician: 'Dr. Johnson',
+          emergencyContact: 'Jane Smith - 555-0123',
+          insuranceInfo: 'BlueCross BlueShield',
+          allergies: 'Penicillin',
+          medications: 'Amoxicillin 500mg TID',
+          notes: 'Patient recovering well'
+        },
+        {
+          patientId: 'P002',
+          name: 'Maria Rodriguez',
+          room: 'Room 302B',
+          ward: '3B',
+          status: 'active',
+          dateOfBirth: new Date('1985-09-12'),
+          gender: 'female',
+          medicalRecordNumber: 'MR123457',
+          primaryDiagnosis: 'Diabetes Type 2',
+          attendingPhysician: 'Dr. Williams',
+          emergencyContact: 'Carlos Rodriguez - 555-0124',
+          insuranceInfo: 'Medicare',
+          allergies: 'None',
+          medications: 'Metformin 1000mg BID',
+          notes: 'Blood sugar levels stable'
+        },
+        {
+          patientId: 'P003',
+          name: 'Robert Johnson',
+          room: 'Room 303A',
+          ward: '3A',
+          status: 'active',
+          dateOfBirth: new Date('1960-12-03'),
+          gender: 'male',
+          medicalRecordNumber: 'MR123458',
+          primaryDiagnosis: 'Hypertension',
+          attendingPhysician: 'Dr. Brown',
+          emergencyContact: 'Linda Johnson - 555-0125',
+          insuranceInfo: 'Aetna',
+          allergies: 'Aspirin',
+          medications: 'Lisinopril 10mg daily',
+          notes: 'BP monitoring required'
+        }
+      ];
+
+      // Insert patients
+      for (const patient of samplePatients) {
+        try {
+          await storage.createPatient(patient);
+        } catch (error) {
+          console.log('Patient may already exist:', patient.patientId);
+        }
+      }
+
+      // Add sample handovers
+      const sampleHandovers = [
+        {
+          patientId: 1,
+          nurserId: req.user?.id || 1,
+          transcription: 'Patient John Smith in room 301A is stable. Vital signs normal. Administered morning medications. Patient reports feeling better and is requesting to ambulate.',
+          isbarReport: JSON.stringify({
+            identify: "John Smith, 45-year-old male",
+            situation: "Recovering from pneumonia",
+            background: "Admitted 3 days ago with respiratory symptoms",
+            assessment: "Vital signs stable, improving respiratory status",
+            recommendation: "Continue current treatment plan, monitor respiratory status"
+          }),
+          status: 'completed'
+        },
+        {
+          patientId: 2,
+          nurserId: req.user?.id || 1,
+          transcription: 'Maria Rodriguez in 302B had blood sugar level of 145 this morning. Administered insulin as prescribed. Patient ate breakfast well and is scheduled for diabetes education at 2 PM.',
+          isbarReport: JSON.stringify({
+            identify: "Maria Rodriguez, 38-year-old female",
+            situation: "Diabetes management",
+            background: "Type 2 diabetes, recently diagnosed",
+            assessment: "Blood sugar levels within target range",
+            recommendation: "Continue current medication regimen, diabetes education"
+          }),
+          status: 'completed'
+        },
+        {
+          patientId: 3,
+          nurserId: req.user?.id || 1,
+          transcription: 'Robert Johnson in 303A had elevated blood pressure this morning at 160/95. Administered additional antihypertensive medication. Patient is resting comfortably.',
+          isbarReport: JSON.stringify({
+            identify: "Robert Johnson, 63-year-old male",
+            situation: "Hypertension management",
+            background: "Long-standing hypertension",
+            assessment: "Blood pressure elevated this morning",
+            recommendation: "Monitor BP closely, consider medication adjustment"
+          }),
+          status: 'completed'
+        }
+      ];
+
+      // Insert handovers
+      for (const handover of sampleHandovers) {
+        try {
+          await storage.createHandover(handover);
+        } catch (error) {
+          console.log('Error creating handover:', error);
+        }
+      }
+
+      res.json({ message: 'Sample data initialized successfully' });
     } catch (error) {
+      console.error('Failed to initialize data:', error);
       res.status(500).json({ message: 'Failed to initialize data' });
     }
   });

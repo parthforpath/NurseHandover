@@ -48,7 +48,8 @@ export default function HandoversPage() {
       });
       if (!response.ok) throw new Error('Failed to fetch handovers');
       return response.json();
-    }
+    },
+    enabled: !!user
   });
 
   const { data: allHandovers, isLoading: allHandoversLoading } = useQuery({
@@ -62,7 +63,8 @@ export default function HandoversPage() {
       });
       if (!response.ok) throw new Error('Failed to fetch handovers');
       return response.json();
-    }
+    },
+    enabled: !!user
   });
 
   const exportHandovers = async () => {
@@ -81,7 +83,7 @@ export default function HandoversPage() {
       const a = document.createElement('a');
       a.style.display = 'none';
       a.href = url;
-      a.download = `handovers_${user?.employeeId}_${format(new Date(), 'yyyy-MM-dd')}.csv`;
+      a.download = `handovers_${user?.employeeId || 'user'}_${format(new Date(), 'yyyy-MM-dd')}.csv`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
@@ -94,8 +96,12 @@ export default function HandoversPage() {
   const groupHandoversByDate = (handovers: Handover[]) => {
     const grouped: { [key: string]: Handover[] } = {};
     
+    if (!handovers || handovers.length === 0) {
+      return grouped;
+    }
+    
     handovers.forEach(handover => {
-      const date = new Date(handover.createdAt);
+      const date = handover.createdAt ? new Date(handover.createdAt) : new Date();
       const dateKey = format(date, 'yyyy-MM-dd');
       
       if (!grouped[dateKey]) {
@@ -106,7 +112,11 @@ export default function HandoversPage() {
     
     // Sort handovers within each date group by time (latest first)
     Object.keys(grouped).forEach(dateKey => {
-      grouped[dateKey].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      grouped[dateKey].sort((a, b) => {
+        const dateA = a.createdAt ? new Date(a.createdAt) : new Date();
+        const dateB = b.createdAt ? new Date(b.createdAt) : new Date();
+        return dateB.getTime() - dateA.getTime();
+      });
     });
     
     return grouped;
@@ -196,9 +206,9 @@ export default function HandoversPage() {
                     <CardContent className="p-4">
                       <div className="flex justify-between items-start mb-2">
                         <div>
-                          <h4 className="font-medium text-gray-800">{handover.patient.name}</h4>
+                          <h4 className="font-medium text-gray-800">{handover.patient?.name || 'Unknown Patient'}</h4>
                           <p className="text-sm text-gray-600">
-                            {handover.patient.room} • ID: {handover.patient.patientId}
+                            {handover.patient?.room || 'Unknown Room'} • ID: {handover.patient?.patientId || 'Unknown'}
                           </p>
                         </div>
                         <Badge className={getStatusColor(handover.status)}>
@@ -209,11 +219,11 @@ export default function HandoversPage() {
                       <div className="flex items-center space-x-4 text-sm text-gray-500 mb-2">
                         <div className="flex items-center space-x-1">
                           <User className="h-3 w-3" />
-                          <span>{handover.nurse.name}</span>
+                          <span>{handover.nurse?.name || 'Unknown'}</span>
                         </div>
                         <div className="flex items-center space-x-1">
                           <Clock className="h-3 w-3" />
-                          <span>{format(new Date(handover.createdAt), 'HH:mm')}</span>
+                          <span>{handover.createdAt ? format(new Date(handover.createdAt), 'HH:mm') : 'Unknown'}</span>
                         </div>
                       </div>
                       

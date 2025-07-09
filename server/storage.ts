@@ -1,6 +1,6 @@
 import { users, patients, handovers, type User, type InsertUser, type Patient, type InsertPatient, type Handover, type InsertHandover } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, like, and, or } from "drizzle-orm";
+import { eq, desc, like, and, or, ilike } from "drizzle-orm";
 import bcrypt from "bcrypt";
 
 export interface IStorage {
@@ -72,20 +72,31 @@ export class DatabaseStorage implements IStorage {
   }
 
   async searchPatients(query: string, ward?: string, status?: string): Promise<Patient[]> {
-    let whereClause = or(
-      like(patients.name, `%${query}%`),
-      like(patients.patientId, `%${query}%`)
-    );
+    try {
+      if (!query && !ward && !status) {
+        // If no filters, return some default results
+        return await db.select().from(patients).limit(20);
+      }
 
-    if (ward) {
-      whereClause = and(whereClause, like(patients.room, `%${ward}%`));
+      let whereClause = or(
+        ilike(patients.name, `%${query}%`),
+        ilike(patients.patientId, `%${query}%`),
+        ilike(patients.room, `%${query}%`)
+      );
+
+      if (ward) {
+        whereClause = and(whereClause, like(patients.room, `%${ward}%`));
+      }
+
+      if (status) {
+        whereClause = and(whereClause, eq(patients.status, status));
+      }
+
+      return await db.select().from(patients).where(whereClause).limit(50);
+    } catch (error) {
+      console.error('Search patients error:', error);
+      return [];
     }
-
-    if (status) {
-      whereClause = and(whereClause, eq(patients.status, status));
-    }
-
-    return await db.select().from(patients).where(whereClause);
   }
 
   async getHandover(id: number): Promise<Handover | undefined> {
