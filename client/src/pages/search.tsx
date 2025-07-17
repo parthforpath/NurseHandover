@@ -30,8 +30,8 @@ export default function SearchPage() {
     queryFn: async () => {
       const params = new URLSearchParams({
         query: searchQuery,
-        ...(ward && { ward }),
-        ...(status && { status })
+        ...(ward && ward !== 'all' && { ward }),
+        ...(status && status !== 'all' && { status })
       });
       
       const token = localStorage.getItem('token');
@@ -95,7 +95,7 @@ export default function SearchPage() {
                 <SelectValue placeholder="All Wards" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Wards</SelectItem>
+                <SelectItem value="all">All Wards</SelectItem>
                 <SelectItem value="3A">Ward 3A</SelectItem>
                 <SelectItem value="3B">Ward 3B</SelectItem>
                 <SelectItem value="4A">Ward 4A</SelectItem>
@@ -107,7 +107,7 @@ export default function SearchPage() {
                 <SelectValue placeholder="All Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Status</SelectItem>
+                <SelectItem value="all">All Status</SelectItem>
                 <SelectItem value="active">Active</SelectItem>
                 <SelectItem value="discharged">Discharged</SelectItem>
                 <SelectItem value="transferred">Transferred</SelectItem>
